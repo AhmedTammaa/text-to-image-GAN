@@ -13,6 +13,7 @@
 /models_encoded
 /word2vec_pretrained_model
 /trained_model
+/models_emb
 *.rar 
 *.zip
 *.png
