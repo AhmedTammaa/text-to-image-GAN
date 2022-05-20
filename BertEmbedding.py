@@ -5,6 +5,10 @@ import pickle
 import re
 import numpy as np
 from tqdm import tqdm
+import string
+import nltk
+from nltk.corpus import stopwords
+import nltk
 class EmbeddingCreator:
     
     def __init__(self):
@@ -39,6 +43,7 @@ class EmbeddingCreator:
                     images.loc[images['images'] == t, 'captions'] = content[random.randint(0, 1)]
         images.to_csv("final.csv", index=False)
 
+    
     def create_feature_vectors_for_single_comment(self,model, cleaned_comments, image_names):
         vectorized_list = []
         image_list = []
@@ -61,10 +66,17 @@ class EmbeddingCreator:
 
         return image_list, np.array(vectorized_list)
 
+    def cleanDataFrame(df):
+        stop = stopwords.words('english')
+        df['captions'] = df['captions'].str.replace('[^\w\s]','',regex=True)
+        df['captions'] = df['captions'].apply(lambda x: ' '.join([word for word in x.split() if word not in (stop)]))
+        return df
+    
     def createEmbeddingFirstTime(self, file_name= '1_test_word_vector_min_bird'):
         df = pd.read_csv('final.csv')
-        #df = df[1:5]
+        df = df[1:5]
         model = self.bert_model
+        df = cleanDataFrame(df)
         cleaned_captions = df['captions'].values
         
         image_names = df['images'].values
@@ -79,6 +91,15 @@ class EmbeddingCreator:
         #print(i)
         #print()
         return word_vector_dict
+    
+    
+    def cleanString(sen):
+        stop = stopwords.words('english')
+        sen = sen.lower()
+        sen = sen.translate(str.maketrans('','',string.punctuation))
+        sen = ' '.join([word for word in sen.split() if word not in (stop)])
+        return sen
+
     def createCustomEmbeddings(self, sentence):
         sentence_list = [sentence]
         cleaned_captions = np.array(sentence_list)
