@@ -66,7 +66,7 @@ class EmbeddingCreator:
 
         return image_list, np.array(vectorized_list)
 
-    def cleanDataFrame(df):
+    def cleanDataFrame(self, df):
         stop = stopwords.words('english')
         df['captions'] = df['captions'].str.replace('[^\w\s]','',regex=True)
         df['captions'] = df['captions'].apply(lambda x: ' '.join([word for word in x.split() if word not in (stop)]))
@@ -74,9 +74,9 @@ class EmbeddingCreator:
     
     def createEmbeddingFirstTime(self, file_name= '1_test_word_vector_min_bird'):
         df = pd.read_csv('final.csv')
-        df = df[1:5]
+       # df = df[1:20]
         model = self.bert_model
-        df = cleanDataFrame(df)
+        df = self.cleanDataFrame(df)
         cleaned_captions = df['captions'].values
         
         image_names = df['images'].values
@@ -93,7 +93,7 @@ class EmbeddingCreator:
         return word_vector_dict
     
     
-    def cleanString(sen):
+    def cleanString(self, sen):
         stop = stopwords.words('english')
         sen = sen.lower()
         sen = sen.translate(str.maketrans('','',string.punctuation))
@@ -101,6 +101,7 @@ class EmbeddingCreator:
         return sen
 
     def createCustomEmbeddings(self, sentence):
+        sentence  = self.cleanString(sentence)
         sentence_list = [sentence]
         cleaned_captions = np.array(sentence_list)
         image_names = np.array(sentence_list)
